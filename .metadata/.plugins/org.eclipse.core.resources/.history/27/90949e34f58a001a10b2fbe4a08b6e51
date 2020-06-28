@@ -1,0 +1,64 @@
+
+public class StackDePace {
+
+	private NodeDePace myTop;
+
+	/**
+	 * Constructs a Stack of pokemon Cards
+	 */
+	public StackDePace() {
+		myTop = null;
+	}
+
+	/**
+	 * Pushes a card to the top of the stack
+	 * @param newCard The card to add
+	 * @return
+	 */
+	public boolean push(PokemonCardDePace newCard) {
+		boolean success = false;
+		NodeDePace cardNode = new NodeDePace(newCard);
+		if (!isFull()) {
+			cardNode.setNext(myTop);
+			myTop = cardNode;
+			success = true;
+		}
+		return success;
+	}
+
+	/**
+	 * Removes the top card from the stack
+	 * @return The top card
+	 */
+	public PokemonCardDePace pop() {
+		PokemonCardDePace ans = null;
+		if (!isEmpty()) {
+			ans = myTop.getData();
+			myTop = myTop.getNext();
+		}
+		return ans;
+	}
+
+	public boolean isFull() {
+		return false;
+	}
+
+	public boolean isEmpty() {
+		return myTop == null;
+	}
+
+	public String toString() {
+		String ans = "-----TOP----";
+		StackDePace temp = new StackDePace();
+		while (!isEmpty()) {
+			PokemonCardDePace theCard = pop();
+			ans += "\n" + theCard;
+			temp.push(theCard);
+		}
+		while (!temp.isEmpty()) {
+			push(temp.pop());
+		}
+		ans += "\n---BOTTOM---";
+		return ans;
+	}
+}

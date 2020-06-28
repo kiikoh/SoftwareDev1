@@ -1,0 +1,20 @@
+1587647782248	Rename type 'ReadNumbers'
+1587648025967	Rename type 'ItemDePace'
+1587648255829	Encapsulate field 'name'
+1587648259283	Encapsulate field 'power'
+1587649872323	Rename resource 'Numbers.txt'
+1587653128218	Rename field 'myHead'
+1587653423326	Rename local variable 'ans'
+1587654309195	Rename local variable 'p1Disc'
+1587654320704	Rename local variable 'p1Deck'
+1587654527945	Rename local variable 'p1Play'
+1587654537468	Rename local variable 'p2Play'
+1587661545215	Move method
+1587661605380	Move method
+1587661606861	Move method
+1587662706632	Copy file
+1587663016057	Rename resource 'test3.txt'
+1587663494863	Rename resource 'test2.txt'
+1587663498864	Delete element
+1587663506543	Delete element
+1587743183661	Move method

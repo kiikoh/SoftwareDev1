@@ -1,0 +1,10 @@
+1586704486153	Rename compilation unit 'Node.java'
+1586704854699	Encapsulate field 'next'
+1586704871776	Encapsulate field 'next'
+1586704875598	Encapsulate field 'item'
+1586705573709	Rename field 'head'
+1586705945845	Rename field 'myItem'
+1586705957122	Rename method 'getItem'
+1586705966799	Rename method 'setItem'
+1586708852472	Delete element
+1586973825440	Delete element

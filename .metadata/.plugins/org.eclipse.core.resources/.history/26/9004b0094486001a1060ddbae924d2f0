@@ -1,0 +1,2 @@
+#!/bin/bash
+paste -d '\n' <(rand -N $0 -M 100 -e -d '\n') <(shuf -n $0 pokemon.txt)

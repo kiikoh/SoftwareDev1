@@ -1,0 +1,255 @@
+import java.io.*;
+import java.util.*;
+
+/**
+ * Kyle DePace <br>
+ * Prog 10 <br>
+ * Due Date and Time: 05/04/2020 before 12:00 p.m. <br>
+ * <br>
+ * Purpose:  This program simulates a war card game with Pokemon<br>
+ * <br>
+ * Input:  	A filename containing a list of pokemon names and power levels<br>
+ * <br>
+ * Output: 	The starting cards, number of play in the game, who won and how<br>
+ * 			many cards both player had. <br>
+ * <br>
+ * Certificate of Authenticity: I certify that this lab is entirely of my own
+ * work. <br>
+ * 
+ * @author Kyle DePace <br>
+ */
+class BattleDemoDePace {
+	
+	static Scanner keyboard = new Scanner(System.in);
+	static final boolean DEBUG = false;
+
+	public static void main(String[] args) {
+		StackDePace p1Deck = new StackDePace(), p1Disc = new StackDePace(), p2Deck = new StackDePace(), p2Disc = new StackDePace();
+		int roundsPlayed = 0;
+		deal(p1Deck, p2Deck);
+		
+		// check to see if round should play, both player have cards and less than 1000
+		while (roundsPlayed < 1000 && !playerOutOfCards(p1Deck, p1Disc) && !playerOutOfCards(p2Deck, p2Disc)) {
+			if (p1Deck.isEmpty())
+				copy(p1Disc, p1Deck);
+			if (p2Deck.isEmpty())
+				copy(p2Disc, p2Deck);
+			// now both decks must have a card to play
+			if (DEBUG) {
+				System.out.println("p1Deck");
+				System.out.println(p1Deck.toString());
+				System.out.println("p1Disc");
+				System.out.println(p1Disc.toString());
+				System.out.println("p2Deck");
+				System.out.println(p2Deck.toString());
+				System.out.println("p2Disc");
+				System.out.println(p2Disc.toString());
+				System.out.println();
+				System.out.println();
+				System.out.println();
+			}
+			//play a round
+			play(p1Deck, p1Disc, p2Deck, p2Disc);
+			roundsPlayed++;
+		}
+		// the game is over
+		printResults(p1Deck, p1Disc, p2Deck, p2Disc, roundsPlayed);
+
+	}// main
+
+	/**
+	 * Read input from the file and deals them to the players
+	 * @param p1 Player 1's deck
+	 * @param p2 Player 2's deck
+	 */
+	public static void deal(StackDePace p1, StackDePace p2) {
+		System.out.print("Enter a filename: ");
+		String fileName = keyboard.next();
+
+		File myFile = new File(fileName);
+
+		int power = 0;
+		String name = "";
+		boolean p1ReceivesNext = true;
+
+		try {
+			Scanner input = new Scanner(myFile);
+
+			while (input.hasNext()) {
+				power = input.nextInt();
+				name = input.next();
+				if (p1ReceivesNext)
+					p1.push(new PokemonCardDePace(name, power));
+				else
+					p2.push(new PokemonCardDePace(name, power));
+				p1ReceivesNext = !p1ReceivesNext;
+			}
+
+			input.close();
+		} // try
+		catch (FileNotFoundException ex) {
+			System.out.println("Failed to find file: " + myFile.getAbsolutePath());
+		} // catch
+		catch (InputMismatchException ex) {
+			System.out.println("Type mismatch for the number I just tried to read.");
+			System.out.println(ex.getMessage());
+		} // catch
+		catch (NumberFormatException ex) {
+			System.out.println("Failed to convert String text into an integer value.");
+			System.out.println(ex.getMessage());
+		} // catch
+		catch (NullPointerException ex) {
+			System.out.println("Null pointer exception.");
+			System.out.println(ex.getMessage());
+		} // catch
+		catch (Exception ex) {
+			// Like an "else" catch(Exception should come last as the catchall.
+			System.out.println("Something went wrong");
+			ex.printStackTrace();
+		} // catch
+	}
+
+	/**
+	 * Simulates a round of play
+	 * @param deck1 Player 1's deck
+	 * @param disc1 Player 1's discard
+	 * @param deck2 Player 2's deck
+	 * @param disc2 Player 2's discard
+	 */
+	public static void play(StackDePace deck1, StackDePace disc1, StackDePace deck2, StackDePace disc2) {
+		//get both players card for the round
+		PokemonCardDePace p1Poke = deck1.pop();
+		PokemonCardDePace p2Poke = deck2.pop();
+		
+		if (DEBUG)
+			System.out.println(p1Poke.toString() + " vs. " + p2Poke.toString());
+		
+		//determine the winner
+		switch (compare(p1Poke, p2Poke)) {
+		case 0:
+			disc1.push(p1Poke);
+			disc2.push(p2Poke);
+			if (DEBUG)
+				System.out.println("Tie");
+			break;
+		case 1:
+			winPlay(disc1, p1Poke, p2Poke);
+			if (DEBUG)
+				System.out.println("Player 1 wins");
+			break;
+		case 2:
+			winPlay(disc2, p2Poke, p1Poke);
+			if (DEBUG)
+				System.out.println("Player 2 wins");
+			break;
+		default:
+			System.out.println("How???");
+		}
+	}
+
+	/**
+	 * Compares the cards and determines a winner based on power
+	 * @param card1 The first card
+	 * @param card2 The second card
+	 * @return 0 for ties, 1 if the first card wins, 2 if the second card wins
+	 */
+	public static int compare(PokemonCardDePace card1, PokemonCardDePace card2) {
+		int winner = 0;
+		if (card1.getPower() > card2.getPower()) {
+			winner = 1;
+		} else if (card1.getPower() < card2.getPower()) {
+			winner = 2;
+		}
+		return winner;
+	}
+
+	/**
+	 * Distributes the cards to the winners discard pile
+	 * @param winner The discard pile of the winner
+	 * @param winningPoke The winning card
+	 * @param losingPoke The losing card
+	 */
+	public static void winPlay(StackDePace winner, PokemonCardDePace winningPoke, PokemonCardDePace losingPoke) {
+		winner.push(winningPoke);
+		winner.push(losingPoke);
+	}
+
+	/**
+	 * Copies a discard pile to the deck
+	 * @param disc The discard pile
+	 * @param deck The deck
+	 */
+	public static void copy(StackDePace disc, StackDePace deck) {
+		StackDePace temp = new StackDePace();
+		while (!disc.isEmpty()) {
+			temp.push(disc.pop());
+		}
+		while (!temp.isEmpty()) {
+			deck.push(temp.pop());
+		}
+	}
+
+	/**
+	 * Gets the number of cards a deck has
+	 * @param deck The deck to count the cards for
+	 * @return The number of cards in the deck
+	 */
+	public static int countCards(StackDePace deck) {
+		int count = 0;
+		StackDePace temp = new StackDePace();
+		while (!deck.isEmpty()) {
+			count++;
+			temp.push(deck.pop());
+		}
+		while (!temp.isEmpty()) {
+			deck.push(temp.pop());
+		}
+		return count;
+	}
+
+	/**
+	 * Formats and outputs a summary of the game
+	 * @param deck1 The deck of player 1
+	 * @param disc1 The discard pile of player 1
+	 * @param deck2 The deck of player 2
+	 * @param disc2 The discard pile of player 2
+	 * @param numPlays The number of rounds in the game
+	 */
+	public static void printResults(StackDePace deck1, StackDePace disc1, StackDePace deck2, StackDePace disc2, int numPlays) {
+		boolean clearVictory = false;
+		int winner = 0;
+		int p1Cards = countCards(deck1) + countCards(disc1);
+		int p2Cards = countCards(deck2) + countCards(disc2);
+		int totalCards = p1Cards + p2Cards;
+		if (playerOutOfCards(deck1, disc1) || playerOutOfCards(deck2, disc2)) // p1 wins
+			clearVictory = true;
+		if (p1Cards > p2Cards)
+			winner = 1;
+		else if (p2Cards > p1Cards) {
+			winner = 2;
+		}
+
+		System.out.println("Battle Card Game Summary");
+		System.out.println("========================");
+		System.out.println("The game started with " + totalCards + " cards.");
+		System.out.println("There were " + numPlays + " plays in the game.");
+		if (clearVictory)
+			System.out.println("The game ended with a clear winner.");
+		else
+			System.out.println("The game took too long.");
+		System.out.println("Player 1 ended up with " + p1Cards + " cards.");
+		System.out.println("Player 2 ended up with " + p2Cards + " cards.");
+		System.out.println("The winner was Player " + winner + ".");
+	}
+
+	/**
+	 * Determines if the player has cards
+	 * @param deck The deck of the player
+	 * @param discard The discard pile of the player
+	 * @return True if the player has no cards in either deck
+	 */
+	public static boolean playerOutOfCards(StackDePace deck, StackDePace discard) {
+		return deck.isEmpty() && discard.isEmpty();
+	}
+
+}// BattleDemoDePace

@@ -1,0 +1,4 @@
+#Thu Apr 02 16:26:55 EDT 2020
+__DEFAULT__=false
+org.eclipse.help.ui.localSearch.master=true
+expression=multi cursor
